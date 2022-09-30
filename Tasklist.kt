@@ -12,7 +12,7 @@ internal class Tasklist {
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     private val tListType = Types.newParameterizedType(List::class.java, Task::class.java)
     private val tListAdapter = moshi.adapter<List<Task>>(tListType)
-    private val file = File("tasklist.json").apply {
+    private val file = File("D:\\eugene\\tasklist.json").apply {
         if (!this.exists()) this.createNewFile()
     }
     init {

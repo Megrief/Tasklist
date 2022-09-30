@@ -25,41 +25,42 @@ class Funs {
     }
     private fun setPriority(): Char {
         println("Input the task priority (C, H, N, L):")
-        val input = readln()
-        return when {
-            input.length != 1 -> setPriority()
-            input.first().uppercaseChar() !in listOf('C', 'H', 'N', 'L') -> setPriority()
-            else -> input.first().uppercaseChar()
+        return readln().let {
+            when {
+                it.length != 1 -> setPriority()
+                it.first().uppercaseChar() !in listOf('C', 'H', 'N', 'L') -> setPriority()
+                else -> it.first().uppercaseChar()
+            }
         }
     }
     private fun setDate(): LocalDate {
         println("Input the date (yyyy-mm-dd):")
-        val lDate = try {
-            val input = readln().split('-').map { it.toInt() }
-            LocalDate(input[0], input[1], input[2])
+        return try {
+            readln().split('-').map { it.toInt() }.let { list ->
+                LocalDate(list[0], list[1], list[2])
+            }
         } catch (_: Exception) {
             println("The input date is invalid")
             setDate()
         }
-        return lDate
     }
     private fun dateTime(date: LocalDate): LocalDateTime {
         println("Input the time (hh:mm):")
-        val lDateTime = try {
-            val input = readln().split(':').map { it.toInt() }
-            LocalDateTime(date.year, date.monthNumber, date.dayOfMonth, input[0], input[1])
+        return try {
+            readln().split(':').map { it.toInt() }.let { list ->
+                LocalDateTime(date.year, date.monthNumber, date.dayOfMonth, list[0], list[1])
+            }
         } catch (_: IllegalArgumentException) {
             println("The input time is invalid")
             dateTime(date)
         }
-        return lDateTime
     }
     private fun LocalDateTime.modToStr(): List<String> {
         return listOf(
-            "${formattingYear(this.year.toString())}-" +
-                    "${formattingOther(this.monthNumber.toString())}-" +
-                    formattingOther(this.dayOfMonth.toString()),
-            "${formattingOther(this.hour.toString())}:${formattingOther(this.minute.toString())}"
+            formattingYear(this.year.toString()) +
+                    "-${ formattingOther(this.monthNumber.toString()) }" +
+                    "-${ formattingOther(this.dayOfMonth.toString()) }",
+            "${ formattingOther(this.hour.toString()) }:${ formattingOther(this.minute.toString()) }"
         )
     }
     private fun formattingYear(year: String): String {
@@ -71,12 +72,13 @@ class Funs {
 
     fun edit(list: MutableList<Task>) {
         println("Input the task number (1-${list.size}):")
-        val tNumber = readln().toIntOrNull()
-        if (tNumber !in 1..list.size) {
-            println("Invalid task number")
-            edit(list)
-        } else {
-            editing(list, tNumber!! - 1)
+        readln().toIntOrNull().let { num ->
+            if (num in 1..list.size) {
+                editing(list, num!! - 1)
+            } else {
+                println("Invalid task number")
+                edit(list)
+            }
         }
     }
     private fun editing(list: MutableList<Task>, ind: Int) {
@@ -121,13 +123,14 @@ class Funs {
 
     fun delete(list: MutableList<Task>) {
         println("Input the task number (1-${list.size}):")
-        val tNumber = readln().toIntOrNull()
-        if (tNumber !in 1..list.size) {
-            println("Invalid task number")
-            delete(list)
-        } else {
-            list.removeAt(tNumber!! - 1)
-            println("The task is deleted")
+        readln().toIntOrNull().let { num ->
+            if (num in 1..list.size) {
+                list.removeAt(num!! - 1)
+                println("The task is deleted")
+            } else {
+                println("Invalid task number")
+                delete(list)
+            }
         }
     }
 
@@ -159,7 +162,7 @@ class Funs {
             val tNum = if ("${index + 1}".length == 1) "${index + 1} " else "${index + 1}"
             task.task.forEachIndexed { ind1, str ->
                 str.chunked(44).forEachIndexed { ind2, subStr ->
-                    val res = if (subStr.length < 44)  subStr.form() else subStr
+                    val res = if (subStr.length < 44)  form(subStr) else subStr
                     if (ind1 == 0 && ind2 == 0) {
                         println(
                             """
@@ -176,11 +179,12 @@ class Funs {
             println("+----+------------+-------+---+---+--------------------------------------------+")
         }
     }
-    private fun String.form(): String {
-        var res = "$this "
-        while (res.length != 44) {
-            res += ' '
+    private fun form(str: String): String {
+        return buildString {
+            this.append(str)
+            while (this.length != 44) {
+                this.append(' ')
+            }
         }
-        return res
     }
 }
